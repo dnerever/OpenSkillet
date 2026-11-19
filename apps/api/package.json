@@ -21,15 +21,15 @@
     "db:seed": "node --env-file-if-exists=../../.env src/seed/seed-demo.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1156.0",
-    "@hono/node-server": "^2.1.5",
+    "@aws-sdk/client-s3": "^3.1169.0",
+    "@hono/node-server": "^2.1.8",
     "@openskillet/core": "*",
-    "@sentry/node": "^11.9.0",
-    "better-auth": "^1.7.13",
+    "@sentry/node": "^11.12.0",
+    "better-auth": "^1.7.25",
     "drizzle-orm": "^0.45.4",
-    "hono": "^4.13.14",
+    "hono": "^4.13.19",
     "postgres": "^3.4.5",
-    "resend": "^6.34.1",
+    "resend": "^6.38.1",
     "sharp": "^0.35.5",
     "zod": "^4.6.7"
   },
