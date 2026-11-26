@@ -10,6 +10,7 @@ export const SIGN_IN_REASONS = {
   propose: 'Sign in to propose a change to this recipe.',
   star: 'Sign in to star recipes you want to find again.',
   list: 'Sign in to save recipes to your lists.',
+  grocery: 'Sign in to save ingredients to your grocery list.',
   report: 'Sign in to report this recipe.',
   comment: 'Sign in to join the discussion.',
   write: 'Sign in to publish your own recipes.',

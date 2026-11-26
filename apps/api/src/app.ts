@@ -15,6 +15,7 @@ import { withViewer, type AppEnv } from './middleware/session.ts';
 import { renderPage } from './og.ts';
 import { renderSitemap } from './sitemap.ts';
 import { listRoutes } from './routes/lists.ts';
+import { groceryRoutes } from './routes/grocery.ts';
 import { mediaRoutes } from './routes/media.ts';
 import { meRoutes } from './routes/me.ts';
 import { proposalRoutes } from './routes/proposals.ts';
@@ -130,6 +131,7 @@ export function createApp() {
   // Before the recipe routes for the same reason proposals are: nothing under
   // `/lists/...` may be matched as a recipe by a looser pattern.
   api.route('/', listRoutes);
+  api.route('/', groceryRoutes);
   api.route('/', reportRoutes);
   api.route('/', feedbackRoutes);
   api.route('/', recipeRoutes);

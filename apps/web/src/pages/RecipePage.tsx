@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate, useParams, useSearch } from '@tanstack/react-router';
 import { useCallback, useMemo, useState } from 'react';
 import { AddToListButton } from '../components/AddToListButton.tsx';
+import { AddIngredientsButton } from '../components/AddIngredientsButton.tsx';
 import { DeleteRecipeButton } from '../components/DeleteRecipeButton.tsx';
 import { ForkButton } from '../components/ForkButton.tsx';
 import { ForkedFrom } from '../components/ForkedFrom.tsx';
@@ -315,7 +316,22 @@ export function RecipePage() {
         phases={doc.phases}
         photo={false}
         meta={false}
-        afterIngredients={<RecipeHistory handle={handle} slug={slug} canEdit={recipe.canEdit} />}
+        afterIngredients={
+          <>
+            {doc.frontmatter.ingredients.length > 0 && (
+              <div className="grocery-recipe-action">
+                <AddIngredientsButton
+                  key={`${version.id}-${options.scale}`}
+                  handle={handle}
+                  slug={slug}
+                  scale={options.scale}
+                  units={options.units}
+                />
+              </div>
+            )}
+            <RecipeHistory handle={handle} slug={slug} canEdit={recipe.canEdit} />
+          </>
+        }
         storageKey={tickKey(handle, slug)}
         visibility={recipe.visibility}
         restate={{

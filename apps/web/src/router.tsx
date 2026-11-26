@@ -221,6 +221,11 @@ const indexRoute = createRoute({
   path: '/',
   component: BrowsePage,
 });
+const groceryRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/grocery',
+  component: lazyRouteComponent(() => import('./pages/GroceryPage.tsx'), 'GroceryPage'),
+});
 /**
  * `/new` and `/signin` load on demand.
  *
@@ -394,6 +399,7 @@ const forksRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  groceryRoute,
   searchRoute,
   signInRoute,
   newRoute,

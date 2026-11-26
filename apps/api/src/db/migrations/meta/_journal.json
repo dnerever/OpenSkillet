@@ -78,6 +78,20 @@
       "when": 1793075456081,
       "tag": "0010_spotty_sentry",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795652746234,
+      "tag": "0011_grocery_list",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1795653149261,
+      "tag": "0012_grocery_import_scale",
+      "breakpoints": true
     }
   ]
 }

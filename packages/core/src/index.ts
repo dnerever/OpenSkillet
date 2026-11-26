@@ -61,6 +61,7 @@ export { findTimers, splitOnTimers, type StepTimer, type StepSegment } from './t
 export { findQuantities, restateQuantity, type StepQuantity } from './quantities.ts';
 export {
   buildShoppingList,
+  mergeShoppingItems,
   formatShoppingList,
   formatShoppingItem,
   type ShoppingAmount,
