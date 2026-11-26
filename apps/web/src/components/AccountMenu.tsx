@@ -37,6 +37,9 @@ export function AccountMenu({ user }: { user: CurrentUser }) {
         <Link className="button secondary" to="/$handle/lists" params={{ handle: user.handle }}>
           Your lists
         </Link>
+        <Link className="button secondary" to="/grocery">
+          Grocery list
+        </Link>
         <Link className="button secondary" to="/settings">
           Settings
         </Link>

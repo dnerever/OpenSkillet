@@ -36,6 +36,7 @@ export const RESERVED_HANDLES = new Set([
   'feed',
   'fork',
   'forks',
+  'grocery',
   'health',
   'icons',
   'healthz',

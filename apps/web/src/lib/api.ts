@@ -1,4 +1,10 @@
-import type { Frontmatter, LineChange, Phase, SemanticChange } from '@openskillet/core';
+import type {
+  Frontmatter,
+  LineChange,
+  Phase,
+  SemanticChange,
+  ShoppingAmount,
+} from '@openskillet/core';
 
 export type PublicUser = {
   id: string;
@@ -527,6 +533,54 @@ export type ListResponse = ListSummary & {
   recipes: ListItem[];
   collaborators: ListCollaborator[];
 };
+
+export type GroceryItem = {
+  id: string;
+  item: string;
+  amounts: ShoppingAmount[];
+  unmeasured: boolean;
+  unmeasuredNote?: string;
+  notes: string[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type GroceryList = { id: string; updatedAt: string; items: GroceryItem[] };
+
+export const fetchGroceryList = () => request<GroceryList>('/api/me/grocery-list');
+
+export const addGroceryItem = (item: Omit<GroceryItem, 'id' | 'createdAt' | 'updatedAt'>) =>
+  request<GroceryItem>('/api/me/grocery-list/items', {
+    method: 'POST',
+    body: JSON.stringify(item),
+  });
+
+export const updateGroceryItem = (
+  id: string,
+  input: { amounts?: ShoppingAmount[]; unmeasured?: boolean; unmeasuredNote?: string | null },
+) =>
+  request<GroceryItem>(`/api/me/grocery-list/items/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(input),
+  });
+
+export const removeGroceryItem = (id: string) =>
+  request<{ removed: true; id: string }>(`/api/me/grocery-list/items/${id}`, {
+    method: 'DELETE',
+  });
+
+export const addRecipeIngredients = (
+  handle: string,
+  slug: string,
+  options: { scale: number; units: 'metric' | 'us' },
+) =>
+  request<{ added: boolean; alreadyAdded: boolean; items: GroceryItem[] }>(
+    `/api/me/grocery-list/recipes/${handle}/${slug}/ingredients`,
+    {
+      method: 'POST',
+      body: JSON.stringify(options),
+    },
+  );
 
 /** A row in the add-to-list picker: a list, plus whether it already holds this recipe. */
 export type PickerList = ListSummary & { contains: boolean };

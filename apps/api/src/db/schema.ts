@@ -4,6 +4,7 @@ import {
   customType,
   index,
   integer,
+  jsonb,
   pgEnum,
   pgTable,
   primaryKey,
@@ -13,6 +14,7 @@ import {
   uuid,
   type AnyPgColumn,
 } from 'drizzle-orm/pg-core';
+import type { ShoppingAmount } from '@openskillet/core';
 
 /** Postgres' own full-text type. Drizzle has no built-in for it. */
 const tsvector = customType<{ data: string; driverData: string }>({
@@ -502,6 +504,63 @@ export const listCollaborators = pgTable(
   ],
 );
 
+/** A private, single grocery list per user; separate from curated recipe lists. */
+export const groceryLists = pgTable(
+  'grocery_lists',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    ownerId: text('owner_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex('grocery_lists_owner_idx').on(t.ownerId)],
+);
+
+export const groceryItems = pgTable(
+  'grocery_items',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    listId: uuid('list_id')
+      .notNull()
+      .references(() => groceryLists.id, { onDelete: 'cascade' }),
+    item: text('item').notNull(),
+    amounts: jsonb('amounts').$type<ShoppingAmount[]>().notNull().default([]),
+    unmeasured: boolean('unmeasured').notNull().default(false),
+    unmeasuredNote: text('unmeasured_note'),
+    notes: jsonb('notes').$type<string[]>().notNull().default([]),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex('grocery_items_list_item_idx').on(t.listId, sql`lower(${t.item})`),
+    index('grocery_items_list_created_idx').on(t.listId, t.createdAt),
+  ],
+);
+
+/** Repeated imports of the same recipe version are idempotent. */
+export const groceryImports = pgTable(
+  'grocery_imports',
+  {
+    listId: uuid('list_id')
+      .notNull()
+      .references(() => groceryLists.id, { onDelete: 'cascade' }),
+    recipeId: uuid('recipe_id')
+      .notNull()
+      .references(() => recipes.id, { onDelete: 'cascade' }),
+    versionId: uuid('version_id')
+      .notNull()
+      .references(() => versions.id, { onDelete: 'cascade' }),
+    scaleKey: text('scale_key').notNull().default('1.0000'),
+    importedAt: timestamp('imported_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.listId, t.versionId, t.scaleKey] }),
+    index('grocery_imports_recipe_idx').on(t.recipeId),
+  ],
+);
+
 /** A report is open until an admin dismisses it or removes what it flagged. */
 export const reportStatus = pgEnum('report_status', ['open', 'resolved']);
 
@@ -570,6 +629,8 @@ export type Media = typeof media.$inferSelect;
 export type List = typeof lists.$inferSelect;
 export type ListItem = typeof listItems.$inferSelect;
 export type ListCollaborator = typeof listCollaborators.$inferSelect;
+export type GroceryList = typeof groceryLists.$inferSelect;
+export type GroceryItem = typeof groceryItems.$inferSelect;
 export type ListRole = (typeof listRole.enumValues)[number];
 export type ListVisibility = (typeof listVisibility.enumValues)[number];
 export type Visibility = (typeof recipeVisibility.enumValues)[number];

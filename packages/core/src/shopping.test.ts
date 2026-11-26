@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { parseRecipe } from './parse.ts';
-import { buildShoppingList, formatShoppingItem, formatShoppingList } from './shopping.ts';
+import {
+  buildShoppingList,
+  formatShoppingItem,
+  formatShoppingList,
+  mergeShoppingItems,
+} from './shopping.ts';
 
 const doc = parseRecipe(`---
 schema: 1
@@ -122,5 +127,57 @@ Mix.
       formatShoppingItem(buildShoppingList(both.frontmatter)[0] as never),
       '1 tsp salt, plus more to taste',
     );
+  });
+});
+
+describe('mergeShoppingItems', () => {
+  it('combines matching ingredients and compatible units while preserving notes', () => {
+    const merged = mergeShoppingItems([
+      {
+        item: 'Olive oil',
+        amounts: [{ qty: 1, unit: 'cup' }],
+        unmeasured: false,
+        notes: ['for dressing'],
+      },
+      {
+        item: 'olive oil',
+        amounts: [{ qty: 2, unit: 'tbsp' }],
+        unmeasured: true,
+        unmeasuredNote: 'for the pan',
+        notes: ['for the pan'],
+      },
+    ]);
+
+    assert.deepEqual(merged, [
+      {
+        item: 'Olive oil',
+        amounts: [{ qty: 1.125, unit: 'cup' }],
+        unmeasured: true,
+        unmeasuredNote: 'for the pan',
+        notes: ['for dressing', 'for the pan'],
+      },
+    ]);
+  });
+
+  it('keeps incompatible unit buckets separate', () => {
+    const merged = mergeShoppingItems([
+      {
+        item: 'yoghurt',
+        amounts: [{ qty: 100, unit: 'g' }],
+        unmeasured: false,
+        notes: [],
+      },
+      {
+        item: 'Yoghurt',
+        amounts: [{ qty: 200, unit: 'ml' }],
+        unmeasured: false,
+        notes: [],
+      },
+    ]);
+
+    assert.deepEqual(merged[0]?.amounts, [
+      { qty: 100, unit: 'g' },
+      { qty: 200, unit: 'ml' },
+    ]);
   });
 });

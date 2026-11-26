@@ -196,6 +196,10 @@ comments     (id, proposal_id, author_id, body, created_at)
 stars        (user_id, recipe_id, PRIMARY KEY (user_id, recipe_id))
 media        (id, recipe_id, uploader_id, storage_key, thumb_key,
               mime, bytes, width, height, created_at)
+grocery_lists (id, owner_id UNIQUE, created_at, updated_at)
+grocery_items (id, list_id, item, amounts, unmeasured, notes, created_at, updated_at)
+grocery_imports (list_id, recipe_id, version_id, scale_key, imported_at,
+                 PRIMARY KEY (list_id, version_id, scale_key))
 ```
 
 Notes:
@@ -265,6 +269,10 @@ Continuing §5.1's numbering, because these are the same kind of rule:
 17. **Only the owner grants or revokes `admin`.** An admin manages viewers and editors; the moment they can mint another admin, two admins can demote each other and the list has no settled authority.
 18. **Nobody can remove or demote the owner.** The owner is `lists.owner_id` and never a `list_collaborators` row, so this is a fact about the schema rather than a check somebody can forget. Anyone else may always show themselves out.
 19. **Losing a role is immediate.** A demoted admin's next write is refused and a removed collaborator's next read of a private list 404s.
+
+### Grocery lists
+
+The grocery list is a private working list, distinct from curated lists of recipe references. Each signed-in user gets one persistent list, created on first read or write. Items keep the shopping model's compatible quantity buckets, unmeasured state, and ingredient notes; matching names merge, compatible units sum, and incompatible measures stay separate. Recipe imports run through the normal recipe visibility check and use the scale and unit system currently shown on the recipe page. Repeating an import at the same recipe version and scale is idempotent; another scale or a new recipe version can be imported separately.
 
 ### 5.3 Deletion
 
@@ -348,6 +356,13 @@ PATCH  /lists/:owner/:slug/collaborators/:handle{ role } — owner only when eit
 DELETE /lists/:owner/:slug/collaborators/:handle
 GET    /users/:handle/lists
 GET    /me/lists?recipe=:handle/:slug           the add-to-list picker, in one request
+
+GET    /me/grocery-list                         private, lazy-created grocery list
+POST   /me/grocery-list/items                   add a manual item (matching names merge)
+PATCH  /me/grocery-list/items/:id               update quantities/notes
+DELETE /me/grocery-list/items/:id               remove an item
+POST   /me/grocery-list/recipes/:owner/:slug/ingredients
+                                                { scale?, units? } — authorized recipe ingredients, once per version and scale
 
 GET    /search?q=&tag=&sort=
 DELETE /media/:id                               the row, then both objects

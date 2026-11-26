@@ -67,6 +67,56 @@ export function buildShoppingList(fm: Frontmatter, system?: MeasurementSystem): 
     addAmount(draft, ing);
   }
 
+  return settleDrafts(order, byItem, system);
+}
+
+/**
+ * Combines already-built recipe shopping lines using the same quantity buckets
+ * as `buildShoppingList`, while retaining their notes and unmeasured wording.
+ */
+export function mergeShoppingItems(items: ShoppingItem[]): ShoppingItem[] {
+  const order: string[] = [];
+  const byItem = new Map<string, Draft>();
+
+  for (const item of items) {
+    const key = item.item.trim().toLowerCase();
+    let draft = byItem.get(key);
+    if (!draft) {
+      draft = {
+        item: item.item.trim(),
+        buckets: new Map(),
+        bucketOrder: [],
+        unmeasured: false,
+        notes: [],
+      };
+      byItem.set(key, draft);
+      order.push(key);
+    }
+
+    draft.notes.push(...item.notes);
+    if (item.unmeasured) {
+      draft.unmeasured = true;
+      if (item.unmeasuredNote && draft.unmeasuredNote === undefined) {
+        draft.unmeasuredNote = item.unmeasuredNote;
+      }
+    }
+    for (const amount of item.amounts) {
+      addAmount(draft, {
+        item: item.item,
+        qty: amount.qty,
+        ...(amount.unit ? { unit: amount.unit } : {}),
+      });
+    }
+  }
+
+  return settleDrafts(order, byItem);
+}
+
+function settleDrafts(
+  order: string[],
+  byItem: Map<string, Draft>,
+  system?: MeasurementSystem,
+): ShoppingItem[] {
   return order.map((key) => {
     const draft = byItem.get(key) as Draft;
     return {

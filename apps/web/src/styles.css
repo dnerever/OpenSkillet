@@ -3781,6 +3781,125 @@ main:has(.recipe-page) {
   text-align: left;
   overflow: hidden;
 }
+
+/* --- private grocery list --- */
+.grocery-page > h1,
+.grocery-heading h1 {
+  margin-bottom: 0.75rem;
+}
+.grocery-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.grocery-heading .eyebrow {
+  margin-bottom: 0.35rem;
+}
+.grocery-add-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.7fr);
+  gap: 0.75rem;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-card);
+}
+.grocery-add-form > button {
+  justify-self: start;
+  align-self: end;
+}
+.grocery-measure-fields {
+  display: grid;
+  grid-template-columns: minmax(5rem, 0.7fr) minmax(6rem, 1fr);
+  gap: 0.6rem;
+}
+.grocery-measure-fields input {
+  width: 100%;
+}
+.grocery-items {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  border-top: 1px solid var(--rule);
+}
+.grocery-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.grocery-item-main {
+  display: grid;
+  min-width: 8rem;
+}
+.grocery-note {
+  font-size: 0.82rem;
+  color: var(--ink-2);
+}
+.grocery-item-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.45rem;
+}
+.grocery-amount {
+  display: flex;
+  gap: 0.35rem;
+}
+.grocery-amount label {
+  width: 5.2rem;
+}
+.grocery-amount label + label {
+  width: 5.8rem;
+}
+.grocery-amount input {
+  width: 100%;
+  padding: 0.35rem 0.45rem;
+  border-radius: 8px;
+}
+.grocery-remove {
+  color: var(--bad);
+}
+.grocery-empty {
+  padding: 1.5rem;
+  border: 1px dashed var(--rule);
+  border-radius: var(--radius-card);
+}
+.grocery-empty h2 {
+  margin-bottom: 0.35rem;
+}
+.grocery-empty p {
+  margin: 0;
+}
+.grocery-recipe-action {
+  margin: 1rem 0;
+}
+@media (max-width: 42rem) {
+  .grocery-add-form {
+    grid-template-columns: 1fr;
+    padding: 0.85rem;
+  }
+  .grocery-item {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .grocery-item-controls {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .grocery-amount label {
+    width: min(28vw, 6rem);
+  }
+  .grocery-amount label + label {
+    width: min(32vw, 7rem);
+  }
+}
 .timeline-title,
 .timeline-time {
   max-width: 100%;
